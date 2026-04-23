@@ -40,8 +40,9 @@ func (ts *TelegramService) SendNotification(config *AlertConfiguration, message 
 	// fmt.Printf("📱 [TELEGRAM] API URL: %s\n", strings.Replace(url, config.BotToken, "[REDACTED]", 1))
 
 	payload := TelegramPayload{
-		ChatID: config.TelegramChatID,
-		Text:   message,
+		ChatID:    config.TelegramChatID,
+		Text:      message,
+		ParseMode: "HTML",
 	}
 
 	if config.TelegramThreadID != "" {
