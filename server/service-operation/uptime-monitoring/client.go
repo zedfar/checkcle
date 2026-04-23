@@ -37,7 +37,7 @@ func NewUptimeClient(pbClient *pocketbase.PocketBaseClient) *UptimeClient {
 func (uc *UptimeClient) GetServices() ([]UptimeService, error) {
 	url := fmt.Sprintf("%s/api/collections/services/records", uc.pbClient.GetBaseURL())
 	
-	resp, err := http.Get(url)
+	resp, err := uc.pbClient.GetHTTPClient().Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch services: %v", err)
 	}
@@ -66,7 +66,7 @@ func (uc *UptimeClient) GetLatestMetricRecord(serviceID, collection string) ([]M
 	
 	// log.Printf("🔍 [METRICS-QUERY] Getting latest record for service %s from %s", serviceID, collection)
 	
-	resp, err := http.Get(url)
+	resp, err := uc.pbClient.GetHTTPClient().Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch metric record: %v", err)
 	}

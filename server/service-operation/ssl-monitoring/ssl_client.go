@@ -26,7 +26,7 @@ func (sc *SSLClient) GetSSLCertificates() ([]SSLCertificate, error) {
 	url := fmt.Sprintf("%s/api/collections/ssl_certificates/records", sc.pbClient.GetBaseURL())
 	// log.Printf("🔍 [SSL-CLIENT] Fetching SSL certificates from: %s", url)
 	
-	resp, err := http.Get(url)
+	resp, err := sc.pbClient.GetHTTPClient().Get(url)
 	if err != nil {
 		// log.Printf("❌ [SSL-CLIENT] HTTP error: %v", err)
 		return nil, err
@@ -59,11 +59,10 @@ func (sc *SSLClient) UpdateSSLCertificate(certID string, data map[string]interfa
 	if err != nil {
 		return fmt.Errorf("failed to create SSL certificate update request: %v", err)
 	}
-	
+
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := sc.pbClient.GetHTTPClient().Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to update SSL certificate: %v", err)
 	}

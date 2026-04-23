@@ -100,6 +100,7 @@ const Login = () => {
           </div>
           
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">{t("signInToYourAccount")}</h1>
+          <span className="inline-block mt-2 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Modified Build</span>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">

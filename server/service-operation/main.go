@@ -30,7 +30,7 @@ func main() {
 		//log.Printf("  - PocketBase URL: %s", cfg.PocketBaseURL)
 	}
 	
-	// Initialize PocketBase client (no credentials required)
+	// Initialize PocketBase client
 	var pbClient *pocketbase.PocketBaseClient
 	var monitoringService *monitoring.MonitoringService
 	var sslMonitoringService *monitoring.SSLMonitoringService
@@ -38,17 +38,19 @@ func main() {
 	var serverMonitoringService *servermonitoring.ServerMonitoringService
 	var uptimeMonitoringService *uptimemonitoring.UptimeMonitor
 	var dataRetentionScheduler *dataretention.Scheduler
-	
+
 	if cfg.PocketBaseEnabled {
-		//log.Println("🔧 Initializing PocketBase client...")
 		var err error
 		pbClient, err = pocketbase.NewPocketBaseClient(cfg.PocketBaseURL)
 		if err != nil {
-			//log.Printf("⚠️  WARNING: Failed to initialize PocketBase client: %v", err)
+			log.Printf("WARNING: Failed to initialize PocketBase client: %v", err)
 		} else {
-			//log.Println("✅ PocketBase client initialized successfully")
-			
-			//log.Println("🔍 Testing PocketBase connection...")
+			if cfg.PocketBaseAdminEmail != "" {
+				if authErr := pbClient.Authenticate(cfg.PocketBaseAdminEmail, cfg.PocketBaseAdminPassword); authErr != nil {
+					log.Printf("WARNING: PocketBase authentication failed: %v", authErr)
+				}
+			}
+
 			if err := pbClient.TestConnection(); err != nil {
 				//log.Printf("⚠️  WARNING: PocketBase connection test failed: %v", err)
 			} else {

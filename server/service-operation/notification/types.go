@@ -45,6 +45,7 @@ type AlertConfiguration struct {
 	ID                    string `json:"id"`
 	NotificationType      string `json:"notification_type"`
 	TelegramChatID        string `json:"telegram_chat_id"`
+	TelegramThreadID      string `json:"telegram_thread_id"`
 	DiscordWebhookURL     string `json:"discord_webhook_url"`
 	SignalNumber          string `json:"signal_number"`
 	SignalAPIEndpoint     string `json:"signal_api_endpoint"`
@@ -53,7 +54,8 @@ type AlertConfiguration struct {
 	TemplateID            string `json:"template_id"`
 	SlackWebhookURL       string `json:"slack_webhook_url"`
 	GoogleChatWebhookURL  string `json:"google_chat_webhook_url"`
-	Enabled               string `json:"enabled"` 
+	Status                string `json:"status"`
+	Enabled               string `json:"enabled"`
 	EmailAddress          string `json:"email_address"`
 	EmailSenderName       string `json:"email_sender_name"`
 	SMTPServer            string `json:"smtp_server"`

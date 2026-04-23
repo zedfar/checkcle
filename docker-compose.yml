@@ -7,10 +7,13 @@ services:
     ports:
       - "8090:8090" # Map ports for external access, if local only "127.0.0.1:8090:8090"
     volumes:
-      - /opt/pb_data:/mnt/pb_data  # Mount persistent data
+      - pb_data:/mnt/pb_data
 
     # Optional: set user limits
     ulimits:
       nofile:
         soft: 4096
         hard: 8192
+
+volumes:
+  pb_data:

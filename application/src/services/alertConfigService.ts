@@ -9,6 +9,7 @@ export interface AlertConfiguration {
   service_id: string;
   notification_type: "telegram" | "discord" | "slack" | "signal" | "google_chat" | "email" | "ntfy" | "pushover" | "notifiarr" | "gotify" | "webhook" | "matrix";
   telegram_chat_id?: string;
+  telegram_thread_id?: string;
   discord_webhook_url?: string;
   signal_number?: string;
   signal_api_endpoint?: string;
@@ -39,12 +40,24 @@ export interface AlertConfiguration {
   matrix_access_token?: string;
 }
 
+// PocketBase stores enabled state as a "status" select field with "enabled"/"disabled" values.
+// These helpers convert between the API representation and the boolean used in the UI.
+const statusToEnabled = (raw: any): boolean =>
+  raw?.status === "enabled" || raw?.enabled === true || raw?.enabled === "enabled" || raw?.enabled === "true";
+
+const enabledToStatus = (enabled: boolean): string =>
+  enabled ? "enabled" : "disabled";
+
+const mapRecord = (record: any): AlertConfiguration => ({
+  ...record,
+  enabled: statusToEnabled(record),
+});
+
 export const alertConfigService = {
   async getAlertConfigurations(): Promise<AlertConfiguration[]> {
-
     try {
       const response = await pb.collection('alert_configurations').getList(1, 50);
-      return response.items as AlertConfiguration[];
+      return response.items.map(mapRecord);
     } catch (error) {
       toast({
         title: "Error",
@@ -56,21 +69,19 @@ export const alertConfigService = {
   },
 
   async createAlertConfiguration(config: Omit<AlertConfiguration, 'id' | 'collectionId' | 'collectionName' | 'created' | 'updated'>): Promise<AlertConfiguration | null> {
-    
     try {
-      // Build the configuration object with proper field mapping
       const cleanConfig: any = {
         service_id: config.service_id || "global",
         notification_type: config.notification_type,
         notify_name: config.notify_name,
-        enabled: config.enabled,
+        status: enabledToStatus(config.enabled),
         template_id: config.template_id || "",
       };
 
-      // Add type-specific fields based on notification type
       if (config.notification_type === "telegram") {
         cleanConfig.telegram_chat_id = config.telegram_chat_id || "";
         cleanConfig.bot_token = config.bot_token || "";
+        cleanConfig.telegram_thread_id = config.telegram_thread_id || "";
       } else if (config.notification_type === "discord") {
         cleanConfig.discord_webhook_url = config.discord_webhook_url || "";
       } else if (config.notification_type === "slack") {
@@ -80,54 +91,40 @@ export const alertConfigService = {
         cleanConfig.signal_api_endpoint = config.signal_api_endpoint || "";
       } else if (config.notification_type === "google_chat") {
         cleanConfig.google_chat_webhook_url = config.google_chat_webhook_url || "";
-        
       } else if (config.notification_type === "email") {
-       
         cleanConfig.email_address = config.email_address || "";
         cleanConfig.email_sender_name = config.email_sender_name || "";
         cleanConfig.smtp_server = config.smtp_server || "";
         cleanConfig.smtp_port = config.smtp_port || "";
         cleanConfig.smtp_password = config.smtp_password || "";
-       
-      } else if (config.notification_type === "ntfy") { 
+      } else if (config.notification_type === "ntfy") {
         cleanConfig.ntfy_endpoint = config.ntfy_endpoint || "";
         cleanConfig.api_token = config.api_token || "";
-
-      } else if (config.notification_type === "pushover") {       
+      } else if (config.notification_type === "pushover") {
         cleanConfig.api_token = config.api_token || "";
         cleanConfig.user_key = config.user_key || "";
-
-      } else if (config.notification_type === "notifiarr") {   
+      } else if (config.notification_type === "notifiarr") {
         cleanConfig.api_token = config.api_token || "";
         cleanConfig.channel_id = config.channel_id || "";
-
-      } else if (config.notification_type === "gotify") {      
+      } else if (config.notification_type === "gotify") {
         cleanConfig.api_token = config.api_token || "";
         cleanConfig.server_url = config.server_url || "";
-        
       } else if (config.notification_type === "webhook") {
         cleanConfig.webhook_url = config.webhook_url || "";
         cleanConfig.webhook_payload_template = config.webhook_payload_template || "";
-
       } else if (config.notification_type === "matrix") {
         cleanConfig.matrix_homeserver = config.matrix_homeserver || "";
         cleanConfig.matrix_room_id = config.matrix_room_id || "";
         cleanConfig.matrix_access_token = config.matrix_access_token || "";
-
       }
+
       const result = await pb.collection('alert_configurations').create(cleanConfig);
-     
       toast({
         title: "Success",
         description: "Notification channel created successfully",
       });
-      return result as AlertConfiguration;
+      return mapRecord(result);
     } catch (error) {
-    
-      // Try to get more details from the error
-      if (error && typeof error === 'object') {
-      }
-      
       toast({
         title: "Error",
         description: "Failed to create notification channel",
@@ -139,22 +136,24 @@ export const alertConfigService = {
 
   async updateAlertConfiguration(id: string, config: Partial<AlertConfiguration>): Promise<AlertConfiguration | null> {
     try {
-      // Build the update config with proper field mapping
       const updateConfig: any = {};
-      
-      // Copy all provided fields
+
       Object.keys(config).forEach(key => {
         if (config[key as keyof AlertConfiguration] !== undefined) {
-          updateConfig[key] = config[key as keyof AlertConfiguration];
+          if (key === 'enabled') {
+            updateConfig['status'] = enabledToStatus(config.enabled!);
+          } else {
+            updateConfig[key] = config[key as keyof AlertConfiguration];
+          }
         }
       });
-            
+
       const result = await pb.collection('alert_configurations').update(id, updateConfig);
       toast({
         title: "Success",
         description: "Notification channel updated successfully",
       });
-      return result as AlertConfiguration;
+      return mapRecord(result);
     } catch (error) {
       toast({
         title: "Error",

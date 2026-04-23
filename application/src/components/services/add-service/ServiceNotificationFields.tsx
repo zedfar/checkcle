@@ -39,8 +39,8 @@ export function ServiceNotificationFields({ form }: ServiceNotificationFieldsPro
   // Update alert configs when data is loaded
   useEffect(() => {
     if (alertConfigsData) {
-      // Only show enabled channels
-      const enabledChannels = alertConfigsData.filter(config => config.enabled);
+      // Only show enabled channels (enabled is mapped to boolean by alertConfigService)
+      const enabledChannels = alertConfigsData.filter(config => config.enabled === true);
       setAlertConfigs(enabledChannels);
       
       // Debug log to check what alert configs are loaded

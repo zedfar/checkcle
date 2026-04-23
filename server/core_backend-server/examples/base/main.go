@@ -43,15 +43,13 @@ func main() {
 		DBConnect:            dbConfig.GetDBConnectFunc(),
 	}
 
-	// If using PostgreSQL or MySQL, also set the auxiliary settings
+	// Always pass data/aux db names — this fork uses them as dbPath even in SQLite mode.
+	// For SQLite: these are file paths inside DataDir (set in db_config.go).
+	// For Postgres/MySQL: these are database names.
+	pbConfig.DefaultPostgresDataDb = dbConfig.PostgresDataDB
+	pbConfig.DefaultPostgresAuxDb = dbConfig.PostgresAuxDB
 	if dbConfig.Type == DBTypePostgres {
 		pbConfig.DefaultPostgresURL = dbConfig.PostgresURL
-		pbConfig.DefaultPostgresDataDb = dbConfig.PostgresDataDB
-		pbConfig.DefaultPostgresAuxDb = dbConfig.PostgresAuxDB
-	} else if dbConfig.Type == DBTypeMysql {
-		// Pass MySQL DB names via the existing structure fields
-		pbConfig.DefaultPostgresDataDb = dbConfig.MysqlDataDB
-		pbConfig.DefaultPostgresAuxDb = dbConfig.MysqlAuxDB
 	}
 
 	// Initialize app with the configuration

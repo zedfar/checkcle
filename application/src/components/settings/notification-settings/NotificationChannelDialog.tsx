@@ -48,6 +48,7 @@ const telegramSchema = baseSchema.extend({
   notification_type: z.literal("telegram"),
   telegram_chat_id: z.string().min(1, "Chat ID is required"),
   bot_token: z.string().min(1, "Bot token is required"),
+  telegram_thread_id: z.string().optional(),
 });
 
 const discordSchema = baseSchema.extend({
@@ -280,10 +281,8 @@ export const NotificationChannelDialog = ({
   
   useEffect(() => {
     if (editingConfig) {
-      // Handle string vs boolean for enabled field
-      const enabled = typeof editingConfig.enabled === 'string' 
-        ? editingConfig.enabled === "true" 
-        : !!editingConfig.enabled;
+      // enabled is already mapped to boolean by alertConfigService.mapRecord
+      const enabled = !!editingConfig.enabled;
 
       reset({
         ...editingConfig,
@@ -427,6 +426,22 @@ export const NotificationChannelDialog = ({
                       </FormControl>
                       <FormDescription>
                         {t("botTokenDesc")}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="telegram_thread_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Thread ID <span className="text-muted-foreground font-normal">(optional)</span></FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. 12345" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Topic/Thread ID for Telegram Supergroup. Leave empty to send to main group chat.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

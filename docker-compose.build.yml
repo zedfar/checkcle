@@ -1,0 +1,80 @@
+version: '3.9'
+
+name: checkcle-modified
+
+services:
+
+  pocketbase:
+    build:
+      context: .
+      dockerfile: server/core_backend-server/Dockerfile
+    container_name: checkcle-modified-pocketbase
+    restart: unless-stopped
+    ports:
+      - "${PB_PORT:-18090}:8090"
+    volumes:
+      - pb_data:/app/pb_data
+    environment:
+      - PB_ENCRYPTION_KEY=${PB_ENCRYPTION_KEY:-}
+      - PB_ADMIN_EMAIL=${PB_ADMIN_EMAIL:-}
+      - PB_ADMIN_PASSWORD=${PB_ADMIN_PASSWORD:-}
+      - PB_ADMIN_FULL_NAME=${PB_ADMIN_FULL_NAME:-Administrator}
+      - PB_ADMIN_USERNAME=${PB_ADMIN_USERNAME:-admin}
+    networks:
+      - checkcle-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8090/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    ulimits:
+      nofile:
+        soft: 4096
+        hard: 8192
+
+  service-operation:
+    build:
+      context: ./server/service-operation
+      dockerfile: Dockerfile
+    container_name: checkcle-modified-service-operation
+    restart: unless-stopped
+    environment:
+      - PORT=8091
+      - POCKETBASE_URL=http://pocketbase:8090
+      - POCKETBASE_ENABLED=true
+      - POCKETBASE_ADMIN_EMAIL=${PB_ADMIN_EMAIL:-}
+      - POCKETBASE_ADMIN_PASSWORD=${PB_ADMIN_PASSWORD:-}
+      - DEFAULT_COUNT=4
+      - DEFAULT_TIMEOUT=15s
+      - MAX_COUNT=20
+      - MAX_TIMEOUT=30s
+      - ENABLE_LOGGING=${ENABLE_LOGGING:-true}
+    depends_on:
+      pocketbase:
+        condition: service_healthy
+    networks:
+      - checkcle-net
+
+  frontend:
+    build:
+      context: ./application
+      dockerfile: Dockerfile
+      args:
+        VITE_PB_PORT: ${PB_PORT:-18090}
+    container_name: checkcle-modified-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-18080}:80"
+    depends_on:
+      pocketbase:
+        condition: service_healthy
+    networks:
+      - checkcle-net
+
+volumes:
+  pb_data:
+
+networks:
+  checkcle-net:
+    driver: bridge

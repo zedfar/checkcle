@@ -31,7 +31,7 @@ export const serviceService = {
         status: item.status || "paused",
         responseTime: item.response_time || item.responseTime || 0,
         uptime: item.uptime || 0,
-        lastChecked: item.last_checked || item.lastChecked || new Date().toLocaleString(),
+        lastChecked: item.last_checked || item.lastChecked || new Date().toISOString(),
         interval: item.heartbeat_interval || item.interval || 60,
         retries: item.max_retries || item.retries || 3,
         notificationChannel: item.notification_id,
@@ -65,7 +65,7 @@ export const serviceService = {
         status: "up", // Changed from "active" to "up" to match the expected enum values
         response_time: 0,
         uptime: 0,
-        last_checked: new Date().toLocaleString(),
+        last_checked: new Date().toISOString(),
         heartbeat_interval: params.interval,
         max_retries: params.retries,
         // Store notification_status as boolean
@@ -107,7 +107,7 @@ export const serviceService = {
         status: record.status || "up", // Changed to match the status we set
         responseTime: record.response_time || 0,
         uptime: record.uptime || 0,
-        lastChecked: record.last_checked || new Date().toLocaleString(),
+        lastChecked: record.last_checked || new Date().toISOString(),
         interval: record.heartbeat_interval || 60,
         retries: record.max_retries || 3,
         notificationChannel: record.notification_id,
@@ -187,7 +187,7 @@ export const serviceService = {
         status: record.status,
         responseTime: record.response_time || 0,
         uptime: record.uptime || 0,
-        lastChecked: record.last_checked || new Date().toLocaleString(),
+        lastChecked: record.last_checked || new Date().toISOString(),
         interval: record.heartbeat_interval || 60,
         retries: record.max_retries || 3,
         notificationChannel: record.notification_id,

@@ -134,7 +134,7 @@ func (snm *SSLNotificationManager) getSSLNotificationTemplate(templateID string)
 	url := fmt.Sprintf("%s/api/collections/ssl_notification_templates/records/%s", snm.pbClient.GetBaseURL(), templateID)
 	// log.Printf("🌐 Fetching SSL notification template from: %s", url)
 	
-	resp, err := http.Get(url)
+	resp, err := snm.pbClient.GetHTTPClient().Get(url)
 	if err != nil {
 		// log.Printf("❌ HTTP error fetching SSL notification template: %v", err)
 		_ = err

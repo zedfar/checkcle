@@ -1,10 +1,11 @@
 import PocketBase from 'pocketbase';
 
 // Dynamically detect API base URL from current host (for use in browser)
+const pbPort = import.meta.env.VITE_PB_PORT || '8090';
 const dynamicBaseUrl =
   typeof window !== 'undefined'
-    ? `${window.location.protocol}//${window.location.hostname}:8090`
-    : 'http://localhost:8090';
+    ? `${window.location.protocol}//${window.location.hostname}:${pbPort}`
+    : `http://localhost:${pbPort}`;
 
 // Define available API endpoints
 export const API_ENDPOINTS = {

@@ -10,14 +10,14 @@ export const mainMenuItems = [
     color: 'text-purple-400',
     hasNavigation: true
   },
-  {
-    id: 'instance-monitoring',
-    path: '/instance-monitoring',
-    icon: Boxes,
-    translationKey: 'instanceMonitoring',
-    color: 'text-blue-400',
-    hasNavigation: true
-  },
+  // {
+  //   id: 'instance-monitoring',
+  //   path: '/instance-monitoring',
+  //   icon: Boxes,
+  //   translationKey: 'instanceMonitoring',
+  //   color: 'text-blue-400',
+  //   hasNavigation: true
+  // },
   {
     id: 'ssl-domain',
     path: '/ssl-domain',

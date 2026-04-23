@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -19,9 +20,10 @@ func NewTelegramService() *TelegramService {
 
 // TelegramPayload represents the payload for Telegram API
 type TelegramPayload struct {
-	ChatID    string `json:"chat_id"`
-	Text      string `json:"text"`
-	ParseMode string `json:"parse_mode,omitempty"`
+	ChatID          string `json:"chat_id"`
+	Text            string `json:"text"`
+	ParseMode       string `json:"parse_mode,omitempty"`
+	MessageThreadID int    `json:"message_thread_id,omitempty"`
 }
 
 // SendNotification sends a notification via Telegram
@@ -40,6 +42,12 @@ func (ts *TelegramService) SendNotification(config *AlertConfiguration, message 
 	payload := TelegramPayload{
 		ChatID: config.TelegramChatID,
 		Text:   message,
+	}
+
+	if config.TelegramThreadID != "" {
+		if threadID, err := strconv.Atoi(config.TelegramThreadID); err == nil {
+			payload.MessageThreadID = threadID
+		}
 	}
 
 	jsonData, err := json.Marshal(payload)

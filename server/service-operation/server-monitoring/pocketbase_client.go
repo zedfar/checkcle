@@ -119,7 +119,7 @@ func (spc *ServerPocketBaseClient) GetServerThreshold(thresholdID string) (*Serv
 	url := fmt.Sprintf("%s/api/collections/server_threshold_templates/records/%s", spc.client.GetBaseURL(), thresholdID)
 	//log.Printf("🔍 Fetching server threshold from: %s", url)
 
-	resp, err := http.Get(url)
+	resp, err := spc.client.GetHTTPClient().Get(url)
 	if err != nil {
 		//log.Printf("❌ HTTP error fetching server threshold: %v", err)
 		_ = err
@@ -150,7 +150,7 @@ func (spc *ServerPocketBaseClient) GetAllServers() ([]Server, error) {
 	url := fmt.Sprintf("%s/api/collections/servers/records?perPage=500", spc.client.GetBaseURL())
 	//log.Printf("🌐 Fetching all servers from: %s", url)
 
-	resp, err := http.Get(url)
+	resp, err := spc.client.GetHTTPClient().Get(url)
 	if err != nil {
 		//log.Printf("❌ HTTP error fetching servers: %v", err)
 		_ = err
@@ -196,7 +196,7 @@ func (spc *ServerPocketBaseClient) GetLatestServerMetrics(serverID string, timeo
 	//log.Printf("🔍 Filter used: %s", filter)
 	//log.Printf("🔍 Cutoff time: %s", cutoff)
 
-	resp, err := http.Get(requestURL)
+	resp, err := spc.client.GetHTTPClient().Get(requestURL)
 	if err != nil {
 		//log.Printf("❌ HTTP error fetching server metrics: %v", err)
 		_ = err

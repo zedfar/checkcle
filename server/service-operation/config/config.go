@@ -14,9 +14,11 @@ type Config struct {
 	MaxTimeout     time.Duration
 	EnableLogging  bool
 	
-	// PocketBase configuration (no auth required)
-	PocketBaseEnabled  bool
-	PocketBaseURL      string
+	// PocketBase configuration
+	PocketBaseEnabled   bool
+	PocketBaseURL       string
+	PocketBaseAdminEmail    string
+	PocketBaseAdminPassword string
 }
 
 func Load() *Config {
@@ -27,10 +29,11 @@ func Load() *Config {
 		MaxCount:       getEnvInt("MAX_COUNT", 20),
 		MaxTimeout:     getEnvDuration("MAX_TIMEOUT", 30*time.Second),
 		EnableLogging:  getEnvBool("ENABLE_LOGGING", true),
-		
-		// PocketBase settings (no credentials needed)
-		PocketBaseEnabled:  getEnvBool("POCKETBASE_ENABLED", true),
-		PocketBaseURL:      getEnv("POCKETBASE_URL", ""),
+
+		PocketBaseEnabled:       getEnvBool("POCKETBASE_ENABLED", true),
+		PocketBaseURL:           getEnv("POCKETBASE_URL", ""),
+		PocketBaseAdminEmail:    getEnv("POCKETBASE_ADMIN_EMAIL", ""),
+		PocketBaseAdminPassword: getEnv("POCKETBASE_ADMIN_PASSWORD", ""),
 	}
 
 	return cfg

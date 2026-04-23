@@ -18,7 +18,12 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ collapsed }) => {
           className="h-6 w-6"
         />
       </div>
-      {!collapsed && <h1 className="text-xl font-semibold">CheckCle App</h1>}
+      {!collapsed && (
+        <div className="flex flex-col">
+          <h1 className="text-xl font-semibold leading-tight">CheckCle App</h1>
+          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 w-fit mt-0.5">MOD</span>
+        </div>
+      )}
     </div>
   );
 };

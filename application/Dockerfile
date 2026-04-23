@@ -1,9 +1,11 @@
 # syntax=docker/dockerfile:1.7
 FROM node:20-bullseye-slim AS build
-WORKDIR /app
+ARG VITE_PB_PORT=8090
 ENV npm_config_fund=false \
     npm_config_audit=false \
-    npm_config_progress=false
+    npm_config_progress=false \
+    VITE_PB_PORT=${VITE_PB_PORT}
+WORKDIR /app
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --fund=false
 COPY . .
