@@ -317,9 +317,9 @@ export const AboutSystem: React.FC = () => {
         </Card>
       </div>
 
-      <Separator />
-
-      <Card className="overflow-hidden border border-border transition-all duration-300 hover:shadow-md">
+      {/* Schema import card hidden — migrations handle DB setup automatically */}
+      {false && <Separator />}
+      {false && <Card className="overflow-hidden border border-border transition-all duration-300 hover:shadow-md">
         <CardHeader className="bg-muted/50 pb-4">
           <CardTitle className="flex items-center gap-2">
             <Database className={`h-5 w-5 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
@@ -397,7 +397,7 @@ export const AboutSystem: React.FC = () => {
             </ul>
           </div>
         </CardContent>
-      </Card>
+      </Card>}
     </div>
   );
 };
