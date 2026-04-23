@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Plus, CalendarClock, AlertCircle } from "lucide-react";
@@ -9,7 +9,6 @@ import { IncidentManagementTab } from "./IncidentManagementTab";
 import { CreateMaintenanceDialog } from './maintenance/CreateMaintenanceDialog';
 import { CreateIncidentDialog } from './incident/CreateIncidentDialog';
 import { useToast } from '@/hooks/use-toast';
-import { initMaintenanceNotifications, stopMaintenanceNotifications } from '@/services/maintenance/maintenanceNotificationService';
 
 export const ScheduleIncidentContent = () => {
   const { t } = useLanguage();
@@ -19,18 +18,6 @@ export const ScheduleIncidentContent = () => {
   const [createIncidentDialogOpen, setCreateIncidentDialogOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [incidentRefreshTrigger, setIncidentRefreshTrigger] = useState(0);
-
-  // Initialize maintenance notifications when the component mounts
-  useEffect(() => {
-   // console.log("Initializing maintenance notifications");
-    initMaintenanceNotifications();
-    
-    // Clean up when the component unmounts
-    return () => {
-     // console.log("Cleaning up maintenance notifications");
-      stopMaintenanceNotifications();
-    };
-  }, []);
 
   const handleCreateButtonClick = () => {
     if (activeTab === "maintenance") {
