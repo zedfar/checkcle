@@ -20,7 +20,12 @@ export const authService = {
       try {
       //  console.log("Attempting to login as admin user");
         const authData = await pb.collection('users').authWithPassword(email, password);
-        
+
+        if (authData.record.isActive === false) {
+          pb.authStore.clear();
+          throw new Error('Account is deactivated. Please contact your administrator.');
+        }
+
         return {
           id: authData.record.id,
           email: authData.record.email,

@@ -14,7 +14,7 @@ export const maintenanceFormSchema = z.object({
   start_time: z.date(),
   end_time: z.date(),
   affected: z.string().min(3, { message: "Affected services must be specified" }),
-  priority: z.enum(['low', 'medium', 'high']),
+  priority: z.enum(['low', 'medium', 'high', 'critical']),
   status: z.enum(['scheduled', 'in_progress', 'completed', 'cancelled']),
   field: z.enum(['minor', 'moderate', 'major']),
   assigned_users: z.array(z.string()).default([]),
