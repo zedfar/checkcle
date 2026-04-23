@@ -2,9 +2,8 @@ import { Button } from "@/components/ui/button";
 import { AuthUser } from "@/services/authService";
 import { useTheme } from "@/contexts/ThemeContext";
 import { 
-  Moon, PanelLeft, PanelLeftClose, Sun, Globe, FileText, 
-  Github, Twitter, MessageSquare, Bell, User, Settings, 
-  LogOut, Menu, X 
+  Moon, PanelLeft, PanelLeftClose, Sun, Globe,
+  User, Settings, LogOut, Menu, X
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { 
@@ -85,53 +84,7 @@ export const Header = ({
       </div>
       
       <div className="flex items-center space-x-1 lg:space-x-3 z-10">
-        {/* External Links - Hidden on small screens */}
-        <div className="hidden md:flex items-center space-x-1 mr-2">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="rounded-full w-8 h-8 border-border"
-            onClick={() => openExternalLink('https://docs.checkcle.io')}
-            title={t("documentation")}
-          >
-            <FileText className="h-4 w-4" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="rounded-full w-8 h-8 border-border"
-            onClick={() => openExternalLink('https://github.com/operacle/checkcle')}
-            title="GitHub"
-          >
-            <Github className="h-4 w-4" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="rounded-full w-8 h-8 border-border"
-            onClick={() => openExternalLink('https://x.com/checkcle_oss')}
-            title="X (Twitter)"
-          >
-            <Twitter className="h-4 w-4" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="rounded-full w-8 h-8 border-border"
-            onClick={() => openExternalLink('https://discord.gg/xs9gbubGwX')}
-            title="Discord"
-          >
-            <MessageSquare className="h-4 w-4" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="rounded-full w-8 h-8 border-border"
-            title={t("notifications")}
-          >
-            <Bell className="w-4 h-4" />
-          </Button>
-        </div>
+        {/* External Links hidden for MOD build */}
 
         <Button variant="outline" size="icon" className="rounded-full w-8 h-8 border-border hidden sm:flex" onClick={toggleTheme}>
           <span className="sr-only">Toggle theme</span>

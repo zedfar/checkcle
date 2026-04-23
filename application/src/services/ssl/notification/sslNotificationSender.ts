@@ -26,11 +26,12 @@ export async function sendSSLNotification(
       return false;
     }
     
-    if (!alertConfigRecord.enabled) {
+    const isEnabled = alertConfigRecord.status === 'enabled' || alertConfigRecord.enabled === true;
+    if (!isEnabled) {
     //  console.log(`Alert configuration is disabled for certificate: ${certificate.domain}`);
       return false;
     }
-    
+
     // Convert PocketBase record to AlertConfiguration
     const alertConfig: AlertConfiguration = {
       id: alertConfigRecord.id,
@@ -39,13 +40,15 @@ export async function sendSSLNotification(
       service_id: alertConfigRecord.service_id || "",
       notification_type: alertConfigRecord.notification_type,
       telegram_chat_id: alertConfigRecord.telegram_chat_id,
+      telegram_thread_id: alertConfigRecord.telegram_thread_id,
       discord_webhook_url: alertConfigRecord.discord_webhook_url,
       signal_number: alertConfigRecord.signal_number,
       notify_name: alertConfigRecord.notify_name,
       bot_token: alertConfigRecord.bot_token,
       template_id: alertConfigRecord.template_id,
       slack_webhook_url: alertConfigRecord.slack_webhook_url,
-      enabled: alertConfigRecord.enabled,
+      status: alertConfigRecord.status,
+      enabled: isEnabled,
       created: alertConfigRecord.created,
       updated: alertConfigRecord.updated
     };
@@ -128,7 +131,8 @@ This is an automated notification from your SSL certificate monitoring system.`;
       body: JSON.stringify({
         chat_id: alertConfig.telegram_chat_id,
         text: enhancedMessage,
-        parse_mode: 'Markdown'
+        parse_mode: 'Markdown',
+        ...(alertConfig.telegram_thread_id ? { message_thread_id: parseInt(alertConfig.telegram_thread_id, 10) } : {})
       })
     });
     

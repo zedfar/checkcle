@@ -39,12 +39,16 @@ export async function sendTelegramNotification(
     console.log("Message content:", message);
     
     // Prepare payload for the API call
-    const payload = {
+    const payload: Record<string, string> = {
       type: "telegram",
       chatId: chatId,
       botToken: botToken,
       message: message
     };
+
+    if (config.telegram_thread_id) {
+      payload.threadId = config.telegram_thread_id;
+    }
     
     console.log("Prepared payload for notification:", {
       ...payload,

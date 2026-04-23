@@ -18,6 +18,7 @@ export interface AlertConfiguration {
   template_id?: string;
   slack_webhook_url?: string;
   google_chat_webhook_url?: string;
+  status?: string;
   enabled: boolean;
   created?: string;
   updated?: string;

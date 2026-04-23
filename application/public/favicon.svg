@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#0f172a"/>
+  <!-- C letter mark -->
+  <path d="M 16 5 C 10.477 5 6 9.477 6 15 C 6 20.523 10.477 25 16 25 C 19.2 25 22.05 23.52 23.9 21.2 L 21.3 19.2 C 20.05 20.85 18.15 21.9 16 21.9 C 12.19 21.9 9.1 18.81 9.1 15 C 9.1 11.19 12.19 8.1 16 8.1 C 18.15 8.1 20.05 9.15 21.3 10.8 L 23.9 8.8 C 22.05 6.48 19.2 5 16 5 Z" fill="#02c37e"/>
+  <!-- MOD badge -->
+  <rect x="19" y="19" width="12" height="8" rx="2" fill="#f59e0b"/>
+  <text x="25" y="25.5" font-family="monospace" font-size="5.5" font-weight="bold" fill="#0f172a" text-anchor="middle">MOD</text>
+</svg>

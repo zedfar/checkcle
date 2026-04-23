@@ -30,7 +30,7 @@ export default async function handler(req) {
     
     // Handle Telegram notifications
     if (type === "telegram") {
-      const { chatId, botToken, message } = body;
+      const { chatId, botToken, message, threadId } = body;
       
       console.log("Telegram notification request details:");
       console.log("- Chat ID:", chatId);
@@ -68,7 +68,8 @@ export default async function handler(req) {
           body: JSON.stringify({
             chat_id: chatId,
             text: message,
-            parse_mode: 'HTML'
+            parse_mode: 'HTML',
+            ...(threadId ? { message_thread_id: parseInt(threadId, 10) } : {})
           }),
         });
         

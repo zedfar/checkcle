@@ -45,7 +45,8 @@ export const maintenanceNotificationService = {
         return false;
       }
       
-      if (!notificationConfig.enabled) {
+      const isEnabled = notificationConfig.status === 'enabled' || notificationConfig.enabled === true;
+      if (!isEnabled) {
       //  console.log("Notification channel is disabled");
         return false;
       }
