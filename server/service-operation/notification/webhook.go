@@ -21,16 +21,19 @@ func NewWebhookService() *WebhookService {
 
 // WebhookPayload represents the payload for webhook
 type WebhookPayload struct {
-	Message     string `json:"message"`
-	NotifyName  string `json:"notify_name"`
-	Timestamp   string `json:"timestamp"`
-	ServiceName string `json:"service_name,omitempty"`
-	Status      string `json:"status,omitempty"`
-	Host        string `json:"host,omitempty"`
-	URL         string `json:"url,omitempty"`
-	Port        int    `json:"port,omitempty"`
-	ServiceType string `json:"service_type,omitempty"`
-	ResponseTime int64 `json:"response_time,omitempty"`
+	Message      string `json:"message"`
+	NotifyName   string `json:"notify_name"`
+	Timestamp    string `json:"timestamp"`
+	ServiceName  string `json:"service_name,omitempty"`
+	Status       string `json:"status,omitempty"`
+	Host         string `json:"host,omitempty"`
+	Hostname     string `json:"hostname,omitempty"`
+	URL          string `json:"url,omitempty"`
+	Domain       string `json:"domain,omitempty"`
+	Port         int    `json:"port,omitempty"`
+	ServiceType  string `json:"service_type,omitempty"`
+	ResponseTime int64  `json:"response_time,omitempty"`
+	ErrorMessage string `json:"error_message,omitempty"`
 	// Server monitoring fields
 	CPUUsage     string `json:"cpu_usage,omitempty"`
 	RAMUsage     string `json:"ram_usage,omitempty"`
@@ -127,33 +130,115 @@ func (ws *WebhookService) generateDefaultPayload(config *AlertConfiguration, mes
 
 // generateCustomPayload generates payload using the custom template
 func (ws *WebhookService) generateCustomPayload(config *AlertConfiguration, message string) ([]byte, error) {
-	// Parse the template
+	return ws.generateCustomPayloadWithData(config, message, nil)
+}
+
+// generateCustomPayloadWithData generates payload using the custom template, with optional structured data
+func (ws *WebhookService) generateCustomPayloadWithData(config *AlertConfiguration, message string, payload *NotificationPayload) ([]byte, error) {
 	tmpl, err := template.New("webhook").Parse(config.WebhookPayloadTemplate)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse webhook payload template: %v", err)
 	}
 
-	// Create template data
 	templateData := map[string]interface{}{
 		"message":     message,
 		"notify_name": config.NotifyName,
 		"timestamp":   time.Now().Format(time.RFC3339),
 	}
 
-	// Execute template
+	if payload != nil {
+		templateData["service_name"] = payload.ServiceName
+		templateData["status"] = strings.ToUpper(payload.Status)
+		templateData["host"] = payload.Host
+		templateData["hostname"] = payload.Hostname
+		templateData["url"] = payload.URL
+		templateData["domain"] = payload.Domain
+		templateData["port"] = payload.Port
+		templateData["service_type"] = payload.ServiceType
+		templateData["response_time"] = payload.ResponseTime
+		templateData["error_message"] = payload.ErrorMessage
+		templateData["cpu_usage"] = payload.CPUUsage
+		templateData["ram_usage"] = payload.RAMUsage
+		templateData["disk_usage"] = payload.DiskUsage
+		templateData["days_left"] = payload.DaysLeft
+		templateData["expiry_date"] = payload.ExpiryDate
+		templateData["issuer_cn"] = payload.IssuerCN
+	}
+
 	var buf bytes.Buffer
 	err = tmpl.Execute(&buf, templateData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute webhook payload template: %v", err)
 	}
 
-	// Validate that the result is valid JSON
 	var jsonCheck interface{}
 	if err := json.Unmarshal(buf.Bytes(), &jsonCheck); err != nil {
 		return nil, fmt.Errorf("webhook payload template did not generate valid JSON: %v", err)
 	}
 
 	return buf.Bytes(), nil
+}
+
+// generateStructuredPayload builds a rich JSON payload from a NotificationPayload
+func (ws *WebhookService) generateStructuredPayload(config *AlertConfiguration, message string, payload *NotificationPayload) ([]byte, error) {
+	p := WebhookPayload{
+		Message:         message,
+		NotifyName:      config.NotifyName,
+		Timestamp:       time.Now().Format(time.RFC3339),
+		ServiceName:     payload.ServiceName,
+		Status:          strings.ToUpper(payload.Status),
+		Host:            payload.Host,
+		Hostname:        payload.Hostname,
+		URL:             payload.URL,
+		Domain:          payload.Domain,
+		Port:            payload.Port,
+		ServiceType:     payload.ServiceType,
+		ResponseTime:    payload.ResponseTime,
+		ErrorMessage:    payload.ErrorMessage,
+		CPUUsage:        payload.CPUUsage,
+		RAMUsage:        payload.RAMUsage,
+		DiskUsage:       payload.DiskUsage,
+		NetworkUsage:    payload.NetworkUsage,
+		CPUTemp:         payload.CPUTemp,
+		DiskIO:          payload.DiskIO,
+		Threshold:       payload.Threshold,
+		CertificateName: payload.CertificateName,
+		ExpiryDate:      payload.ExpiryDate,
+		DaysLeft:        payload.DaysLeft,
+		IssuerCN:        payload.IssuerCN,
+	}
+	return json.Marshal(p)
+}
+
+// SendNotificationWithPayload sends a webhook notification with full structured payload data
+func (ws *WebhookService) SendNotificationWithPayload(config *AlertConfiguration, message string, payload *NotificationPayload) error {
+	if config.WebhookURL == "" {
+		return fmt.Errorf("webhook URL is required")
+	}
+
+	var jsonData []byte
+	var err error
+
+	if config.WebhookPayloadTemplate != "" && strings.TrimSpace(config.WebhookPayloadTemplate) != "" {
+		jsonData, err = ws.generateCustomPayloadWithData(config, message, payload)
+	} else {
+		jsonData, err = ws.generateStructuredPayload(config, message, payload)
+	}
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.Post(config.WebhookURL, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return fmt.Errorf("webhook error, status: %d", resp.StatusCode)
+	}
+
+	return nil
 }
 
 // SendServerNotification sends a server-specific notification via webhook

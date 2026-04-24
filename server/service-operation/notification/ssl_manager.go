@@ -102,7 +102,11 @@ func (snm *SSLNotificationManager) SendSSLNotification(payload *NotificationPayl
 
 		// SEND IMMEDIATELY - NO DELAYS
 		// log.Printf("⚡ [SSL-TELEGRAM] Sending via %s for SSL certificate %s", alertConfig.NotificationType, payload.Domain)
-		err = service.SendNotification(alertConfig, message)
+		if ws, ok := service.(*WebhookService); ok {
+			err = ws.SendNotificationWithPayload(alertConfig, message, payload)
+		} else {
+			err = service.SendNotification(alertConfig, message)
+		}
 		if err != nil {
 			// log.Printf("❌ [SSL-FAILED] Failed to send via %s for %s: %v", alertConfig.NotificationType, payload.Domain, err)
 			errors = append(errors, fmt.Sprintf("send failed %s: %v", alertConfig.NotificationType, err))
@@ -110,7 +114,7 @@ func (snm *SSLNotificationManager) SendSSLNotification(payload *NotificationPayl
 			// log.Printf("✅ [SSL-SUCCESS] Successfully sent via %s for %s", alertConfig.NotificationType, payload.Domain)
 			successCount++
 		}
-		
+
 		_ = alertConfig
 		_ = message
 	}

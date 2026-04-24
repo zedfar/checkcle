@@ -84,7 +84,11 @@ func (unm *UptimeNotificationManager) SendUptimeServiceNotification(payload *Not
 
 		// SEND IMMEDIATELY - NO DELAYS
 		// log.Printf("⚡ [UPTIME-TELEGRAM] Sending via %s for uptime service %s", alertConfig.NotificationType, payload.ServiceName)
-		err = service.SendNotification(alertConfig, message)
+		if ws, ok := service.(*WebhookService); ok {
+			err = ws.SendNotificationWithPayload(alertConfig, message, payload)
+		} else {
+			err = service.SendNotification(alertConfig, message)
+		}
 		if err != nil {
 			// log.Printf("❌ [UPTIME-FAILED] Failed to send via %s for %s: %v", alertConfig.NotificationType, payload.ServiceName, err)
 			errors = append(errors, fmt.Sprintf("send failed %s: %v", alertConfig.NotificationType, err))

@@ -81,7 +81,11 @@ func (snm *ServerNotificationManager) SendServiceNotification(payload *Notificat
 			continue
 		}
 
-		err = service.SendNotification(alertConfig, message)
+		if ws, ok := service.(*WebhookService); ok {
+			err = ws.SendNotificationWithPayload(alertConfig, message, payload)
+		} else {
+			err = service.SendNotification(alertConfig, message)
+		}
 		if err != nil {
 			// log.Printf("❌ Failed to send notification via %s for %s: %v", alertConfig.NotificationType, id, err)
 			errors = append(errors, fmt.Sprintf("failed to send via %s for %s: %v", alertConfig.NotificationType, id, err))
@@ -168,7 +172,11 @@ func (snm *ServerNotificationManager) SendResourceNotification(payload *Notifica
 			continue
 		}
 
-		err = service.SendNotification(alertConfig, message)
+		if ws, ok := service.(*WebhookService); ok {
+			err = ws.SendNotificationWithPayload(alertConfig, message, payload)
+		} else {
+			err = service.SendNotification(alertConfig, message)
+		}
 		if err != nil {
 			// log.Printf("❌ Failed to send resource notification via %s for %s: %v", alertConfig.NotificationType, id, err)
 			errors = append(errors, fmt.Sprintf("failed to send via %s for %s: %v", alertConfig.NotificationType, id, err))
