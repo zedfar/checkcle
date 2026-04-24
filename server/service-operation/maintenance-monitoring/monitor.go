@@ -212,34 +212,60 @@ func (mm *MaintenanceMonitor) sendNotification(m MaintenanceRecord, notifType st
 
 // buildMessage generates the Telegram HTML message for a maintenance event
 func buildMessage(m MaintenanceRecord, notifType string) string {
-	var emoji, statusText, timeText string
-
-	switch notifType {
-	case "start":
-		emoji = "⚠️"
-		statusText = "has started"
-		timeText = fmt.Sprintf("Scheduled until: %s", formatTime(m.EndTime))
-	case "end":
-		emoji = "✅"
-		statusText = "has completed"
-		timeText = "All systems are back to normal operation"
-	}
-
 	affected := strings.Join(
 		filterEmpty(strings.Split(m.Affected, ",")),
 		", ",
 	)
+	if affected == "" {
+		affected = "N/A"
+	}
 
-	return fmt.Sprintf(
-		"%s <b>Maintenance %s</b>\n\n<b>Title:</b> %s\n<b>Description:</b> %s\n<b>Affected Services:</b> %s\n<b>%s</b>\n\n<b>Priority:</b> %s\n<b>Impact:</b> %s",
-		emoji, statusText,
-		m.Title,
-		m.Description,
-		affected,
-		timeText,
-		strings.ToUpper(m.Priority),
-		strings.ToUpper(m.Field),
-	)
+	priority := strings.ToUpper(m.Priority)
+	impact := strings.ToUpper(m.Field)
+
+	switch notifType {
+	case "start":
+		startStr := formatTime(m.StartTime)
+		endStr := formatTime(m.EndTime)
+		// Estimate duration
+		duration := ""
+		if st, err := parseTime(m.StartTime); err == nil {
+			if et, err2 := parseTime(m.EndTime); err2 == nil {
+				d := et.Sub(st)
+				h := int(d.Hours())
+				min := int(d.Minutes()) % 60
+				if h > 0 {
+					duration = fmt.Sprintf(" (~%dh %dm)", h, min)
+				} else {
+					duration = fmt.Sprintf(" (~%dm)", min)
+				}
+			}
+		}
+		return fmt.Sprintf(
+			"⚠️ <b>Maintenance Started</b>\n\n"+
+				"📋 <b>Title:</b> %s\n"+
+				"📝 <b>Description:</b> %s\n"+
+				"🖥️ <b>Affected:</b> %s\n\n"+
+				"🕐 <b>Start:</b> %s\n"+
+				"🕔 <b>End:</b> %s%s\n\n"+
+				"⚡ <b>Priority:</b> %s\n"+
+				"💥 <b>Impact:</b> %s",
+			m.Title, m.Description, affected,
+			startStr, endStr, duration,
+			priority, impact,
+		)
+	case "end":
+		return fmt.Sprintf(
+			"✅ <b>Maintenance Completed</b>\n\n"+
+				"📋 <b>Title:</b> %s\n"+
+				"🖥️ <b>Affected:</b> %s\n\n"+
+				"✅ All systems are back to normal operation.\n"+
+				"🕐 <b>Completed at:</b> %s",
+			m.Title, affected,
+			formatTime(m.EndTime),
+		)
+	}
+	return ""
 }
 
 // parseTime parses PocketBase datetime strings (supports space and T separator)
