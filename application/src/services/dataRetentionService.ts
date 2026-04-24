@@ -135,33 +135,23 @@ export const dataRetentionService = {
       let totalDeleted = 0;
       const cleanedCollections: string[] = [];
 
-      // Calculate cutoff date for server data
       const serverCutoffDate = new Date();
       serverCutoffDate.setDate(serverCutoffDate.getDate() - settings.serverRetentionDays);
 
-      console.log(`Starting server cleanup - Cutoff: ${serverCutoffDate.toISOString()}`);
-
-      // Clean ping_data collection
-      try {
-        const pingRecords = await pb.collection('ping_data').getFullList({
-          filter: `created < "${serverCutoffDate.toISOString()}"`
-        });
-        
-        console.log(`Found ${pingRecords.length} ping records to delete`);
-        
-        for (const record of pingRecords) {
-          await pb.collection('ping_data').delete(record.id);
-          totalDeleted++;
+      for (const col of ['server_metrics', 'docker_metrics']) {
+        try {
+          const records = await pb.collection(col).getFullList({
+            filter: `created < "${serverCutoffDate.toISOString()}"`
+          });
+          for (const record of records) {
+            await pb.collection(col).delete(record.id);
+            totalDeleted++;
+          }
+          if (records.length > 0) cleanedCollections.push(col);
+        } catch (error) {
+          console.error(`Error cleaning ${col}:`, error);
         }
-        
-        if (pingRecords.length > 0) {
-          cleanedCollections.push('ping_data');
-        }
-      } catch (error) {
-        console.error("Error cleaning ping_data:", error);
       }
-
-      console.log(`Server cleanup completed. Deleted ${totalDeleted} records`);
 
       return {
         deletedRecords: totalDeleted,
@@ -193,44 +183,34 @@ export const dataRetentionService = {
 
       console.log(`Starting manual cleanup - Uptime cutoff: ${uptimeCutoffDate.toISOString()}, Server cutoff: ${serverCutoffDate.toISOString()}`);
 
-      // Clean uptime_data collection
-      try {
-        const uptimeRecords = await pb.collection('uptime_data').getFullList({
-          filter: `created < "${uptimeCutoffDate.toISOString()}"`
-        });
-        
-        console.log(`Found ${uptimeRecords.length} uptime records to delete`);
-        
-        for (const record of uptimeRecords) {
-          await pb.collection('uptime_data').delete(record.id);
-          totalDeleted++;
+      for (const col of ['dns_data', 'ping_data', 'tcp_data', 'uptime_data', 'services_metrics']) {
+        try {
+          const records = await pb.collection(col).getFullList({
+            filter: `created < "${uptimeCutoffDate.toISOString()}"`
+          });
+          for (const record of records) {
+            await pb.collection(col).delete(record.id);
+            totalDeleted++;
+          }
+          if (records.length > 0) cleanedCollections.push(col);
+        } catch (error) {
+          console.error(`Error cleaning ${col}:`, error);
         }
-        
-        if (uptimeRecords.length > 0) {
-          cleanedCollections.push('uptime_data');
-        }
-      } catch (error) {
-        console.error("Error cleaning uptime_data:", error);
       }
 
-      // Clean ping_data collection
-      try {
-        const pingRecords = await pb.collection('ping_data').getFullList({
-          filter: `created < "${serverCutoffDate.toISOString()}"`
-        });
-        
-        console.log(`Found ${pingRecords.length} ping records to delete`);
-        
-        for (const record of pingRecords) {
-          await pb.collection('ping_data').delete(record.id);
-          totalDeleted++;
+      for (const col of ['server_metrics', 'docker_metrics']) {
+        try {
+          const records = await pb.collection(col).getFullList({
+            filter: `created < "${serverCutoffDate.toISOString()}"`
+          });
+          for (const record of records) {
+            await pb.collection(col).delete(record.id);
+            totalDeleted++;
+          }
+          if (records.length > 0) cleanedCollections.push(col);
+        } catch (error) {
+          console.error(`Error cleaning ${col}:`, error);
         }
-        
-        if (pingRecords.length > 0) {
-          cleanedCollections.push('ping_data');
-        }
-      } catch (error) {
-        console.error("Error cleaning ping_data:", error);
       }
 
       // Update last cleanup timestamp

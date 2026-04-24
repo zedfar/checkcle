@@ -171,5 +171,10 @@ descriptionChannelsServices: "កំណត់រចនាសម្ព័ន្�
   serverRetentionLabel: "ការរក្សាទុកការតាមដានម៉ាស៊ីនមេ (ចំនួនថ្ងៃ)",
   serverRetentionHelp: "រង្វាស់ម៉ាស៊ីនមេ និងទិន្នន័យដំណើរការដែលយូរជាងនេះនឹងត្រូវលុបដោយស្វ័យប្រវត្តិ។",
   lastCleanup: "ការសម្អាតស្វ័យប្រវត្តិចុងក្រោយ",
+  manualCleanup: "ការសម្អាតដោយដៃ",
+  manualCleanupDescription: "ចាប់ផ្ដើមការសម្អាតទិន្នន័យដោយដៃ។ វានឹងលុបកំណត់ត្រាដែលចាស់ជាងរយៈពេលដែលបានកំណត់។",
+  cleanupUptimeData: "សម្អាតទិន្នន័យ Uptime",
+  cleanupServerData: "សម្អាតទិន្នន័យម៉ាស៊ីនមេ",
+  cleanupAll: "សម្អាតទិន្នន័យទាំងអស់",
 
 };

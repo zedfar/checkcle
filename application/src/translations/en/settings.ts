@@ -172,6 +172,11 @@ export const settingsTranslations: SettingsTranslations = {
   serverRetentionLabel: "Server Monitoring Retention (days)",
   serverRetentionHelp: "Server metrics and process data older than this will be automatically deleted",
   lastCleanup: "Last automatic cleanup",
+  manualCleanup: "Manual Cleanup",
+  manualCleanupDescription: "Manually trigger data cleanup now. This will delete records older than the configured retention period.",
+  cleanupUptimeData: "Clean Uptime Data",
+  cleanupServerData: "Clean Server Data",
+  cleanupAll: "Clean All Data",
   // save: "Save Changes"
 
 };

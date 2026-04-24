@@ -170,5 +170,10 @@ export interface SettingsTranslations {
   serverRetentionLabel: string;
   serverRetentionHelp: string;
   lastCleanup: string;
+  manualCleanup: string;
+  manualCleanupDescription: string;
+  cleanupUptimeData: string;
+  cleanupServerData: string;
+  cleanupAll: string;
   // save: string;
 }

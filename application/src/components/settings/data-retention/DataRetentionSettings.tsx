@@ -270,6 +270,47 @@ const DataRetentionSettings = () => {
           </Button>
         </CardFooter>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Trash2 className="h-5 w-5" />
+            {t("manualCleanup")}
+          </CardTitle>
+          <CardDescription>
+            {t("manualCleanupDescription")}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-3">
+          <Button
+            variant="outline"
+            onClick={handleUptimeShrink}
+            disabled={isUptimeShrinking || isFullShrinking}
+            className="flex items-center gap-2"
+          >
+            {isUptimeShrinking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
+            {t("cleanupUptimeData")}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleServerShrink}
+            disabled={isServerShrinking || isFullShrinking}
+            className="flex items-center gap-2"
+          >
+            {isServerShrinking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Server className="h-4 w-4" />}
+            {t("cleanupServerData")}
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleFullShrink}
+            disabled={isFullShrinking || isUptimeShrinking || isServerShrinking}
+            className="flex items-center gap-2"
+          >
+            {isFullShrinking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+            {t("cleanupAll")}
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 };
