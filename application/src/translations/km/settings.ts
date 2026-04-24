@@ -87,6 +87,7 @@ descriptionChannelsServices: "កំណត់រចនាសម្ព័ន្�
   cancel: "បោះបង់",
   updateChannel: "ធ្វើបច្ចុប្បន្នភាពបណ្តាញ",
   createChannel: "បង្កើតបណ្តាញ",
+  sendTest: "ផ្ញើសាកល្បង",
   payloadTemplates: "ទម្រង់បន្ទុក",
   availablePlaceholders: "កន្លែងទុកជាមុនដែលអាចប្រើបាន៖",
   server: "ម៉ាស៊ីនបម្រើ",

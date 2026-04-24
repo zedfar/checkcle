@@ -87,6 +87,7 @@ export const settingsTranslations: SettingsTranslations = {
   cancel: "Cancel",
   updateChannel: "Update Channel",
   createChannel: "Create Channel",
+  sendTest: "Send Test",
   payloadTemplates: "Payload Templates",
   availablePlaceholders: "Available Placeholders:",
   server: "Server",

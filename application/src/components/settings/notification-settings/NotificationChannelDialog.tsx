@@ -132,6 +132,7 @@ export const NotificationChannelDialog = ({
 }: NotificationChannelDialogProps) => {
   const { t } = useLanguage();
   const isEditing = !!editingConfig;
+  const [isTesting, setIsTesting] = React.useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -173,6 +174,58 @@ export const NotificationChannelDialog = ({
 
   const insertTemplate = (template: string) => {
     setValue("webhook_payload_template", template);
+  };
+
+  const handleTest = async () => {
+    const values = form.getValues();
+    setIsTesting(true);
+    try {
+      if (values.notification_type === "telegram") {
+        const { bot_token, telegram_chat_id } = values as any;
+        if (!bot_token || !telegram_chat_id) {
+          toast({ title: "Missing fields", description: "Bot token and Chat ID are required", variant: "destructive" });
+          return;
+        }
+        const resp = await fetch(`https://api.telegram.org/bot${bot_token}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: telegram_chat_id,
+            text: "✅ <b>Test Notification</b>\nThis is a test message from <b>CheckCle</b> monitoring system.",
+            parse_mode: "HTML",
+          }),
+        });
+        const data = await resp.json();
+        if (!data.ok) throw new Error(data.description);
+        toast({ title: "Test sent", description: "Telegram test message delivered successfully" });
+      } else if (values.notification_type === "webhook") {
+        const { webhook_url, notify_name } = values as any;
+        if (!webhook_url) {
+          toast({ title: "Missing fields", description: "Webhook URL is required", variant: "destructive" });
+          return;
+        }
+        const resp = await fetch(webhook_url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: "Test notification from CheckCle monitoring system",
+            notify_name: notify_name || "CheckCle",
+            status: "TEST",
+            timestamp: new Date().toISOString(),
+          }),
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status} ${resp.statusText}`);
+        toast({ title: "Test sent", description: "Webhook test request delivered successfully" });
+      }
+    } catch (error) {
+      toast({
+        title: "Test failed",
+        description: error instanceof Error ? error.message : "Failed to send test notification",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTesting(false);
+    }
   };
 
   const onSubmit = async (values: FormValues) => {
@@ -427,11 +480,15 @@ export const NotificationChannelDialog = ({
               )}
             />
             
-            <DialogFooter>
+            <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
               <Button variant="outline" type="button" onClick={handleClose}>
                 {t("cancel")}
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button variant="secondary" type="button" onClick={handleTest} disabled={isTesting || isSubmitting}>
+                {isTesting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t("sendTest")}
+              </Button>
+              <Button type="submit" disabled={isSubmitting || isTesting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? t("updateChannel") : t("createChannel")}
               </Button>

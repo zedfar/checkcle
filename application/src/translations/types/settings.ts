@@ -85,6 +85,7 @@ export interface SettingsTranslations {
   cancel: string;
   updateChannel: string;
   createChannel: string;
+  sendTest: string;
   payloadTemplates: string;
   availablePlaceholders: string;
   server: string;
